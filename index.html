@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WASTELAND - Electronic Artist</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="icon.ico">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f8ff;
+            color: #1a1a1a;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(135deg, #4a90e2, #50c9c3);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+        }
+        h1 {
+            font-size: 3.5em;
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .contact-info a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            font-size: 1.1em;
+        }
+        .contact-info a:hover {
+            transform: translateY(-3px);
+            text-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .contact-info i {
+            margin-right: 8px;
+            font-size: 1.2em;
+        }
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 40px;
+        }
+        .spotify-embed {
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .latest-tracks {
+            width: 100%;
+        }
+        h2 {
+            font-size: 2.2em;
+            color: #4a90e2;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .albums {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+        }
+        .album {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .album:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        .album img {
+            width: 250px;
+            height: 250px;
+            display: block;
+            object-fit: cover;
+        }
+        .album-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(74, 144, 226, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .album:hover .album-overlay {
+            opacity: 1;
+        }
+        .album-overlay a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.2em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 10px 20px;
+            border: 2px solid white;
+            transition: all 0.3s ease;
+        }
+        .album-overlay a:hover {
+            background: white;
+            color: #4a90e2;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>WASTELAND</h1>
+            <p>Electronic Music Artist</p>
+            <div class="contact-info">
+                <a href="mailto:wasteland@aaa.lol"><i class="fas fa-envelope"></i> wasteland@aaa.lol</a>
+                <a href="https://open.spotify.com/artist/1cyVgRDiAkKEoZcH8i8FXk" target="_blank"><i class="fab fa-spotify"></i> Spotify</a>
+            </div>
+        </div>
+    </header>
+    <main class="container">
+        <div class="content">
+            <div class="spotify-embed">
+                <iframe src="https://open.spotify.com/embed/artist/1cyVgRDiAkKEoZcH8i8FXk" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+            </div>
+            <div class="latest-tracks">
+                <h2>Latest Releases</h2>
+                <div class="albums" id="albumsContainer">
+                    <!-- Albums will be added here dynamically -->
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+        // Function to load links from the text file
+        async function loadLinks() {
+            try {
+                const response = await fetch('/links.txt');
+                const text = await response.text();
+                return text.split('\n').filter(link => link.trim() !== '');
+            } catch (error) {
+                console.error('Error loading links:', error);
+                return [];
+            }
+        }
+
+        // Function to create album elements
+        function createAlbumElement(index, link) {
+            const album = document.createElement('div');
+            album.className = 'album';
+            album.innerHTML = `
+                <img src="/covers/cover${index + 1}.png" alt="Album ${index + 1}">
+                <div class="album-overlay">
+                    <a href="${link}" target="_blank">Listen on Spotify</a>
+                </div>
+            `;
+            return album;
+        }
+
+        // Main function to load and display albums
+        async function loadAlbums() {
+            const links = await loadLinks();
+            const albumsContainer = document.getElementById('albumsContainer');
+            
+            links.forEach((link, index) => {
+                if (index < 2) {  // Limit to 2 albums
+                    const albumElement = createAlbumElement(index, link);
+                    albumsContainer.appendChild(albumElement);
+                }
+            });
+        }
+
+        // Load albums once the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', loadAlbums);
+    </script>
+</body>
+</html>
