@@ -190,7 +190,7 @@
             const albumsContainer = document.getElementById('albumsContainer');
             
             links.forEach((link, index) => {
-                if (index < 2) {  // Limit to 2 albums
+                if (index < 6) {  // Limit to 2 albums
                     const albumElement = createAlbumElement(index, link);
                     albumsContainer.appendChild(albumElement);
                 }
